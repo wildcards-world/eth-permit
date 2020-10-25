@@ -99,7 +99,8 @@ const getDomain = async (provider: any, token: string | Domain): Promise<Domain>
 };
 
 export const signDaiPermit = async (
-  provider: any,
+  executingProvider: any,
+  signingProvider: any,
   token: string | Domain,
   holder: string,
   spender: string,
@@ -111,20 +112,21 @@ export const signDaiPermit = async (
   const message: DaiPermitMessage = {
     holder,
     spender,
-    nonce: nonce || await call(provider, tokenAddress, `${NONCES_FN}${zeros(24)}${holder.substr(2)}`),
+    nonce: nonce || await call(executingProvider, tokenAddress, `${NONCES_FN}${zeros(24)}${holder.substr(2)}`),
     expiry: expiry || MAX_INT,
     allowed: true,
   };
 
-  const domain = await getDomain(provider, token);
+  const domain = await getDomain(executingProvider, token);
   const typedData = createTypedDaiData(message, domain);
-  const sig = await signData(provider, holder, typedData);
+  const sig = await signData(signingProvider, holder, typedData);
 
   return { ...sig, ...message };
 };
 
 export const signERC2612Permit = async (
-  provider: any,
+  executingProvider: any,
+  signingProvider: any,
   token: string | Domain,
   owner: string,
   spender: string,
@@ -138,13 +140,13 @@ export const signERC2612Permit = async (
     owner,
     spender,
     value,
-    nonce: nonce || await call(provider, tokenAddress, `${NONCES_FN}${zeros(24)}${owner.substr(2)}`),
+    nonce: nonce || await call(executingProvider, tokenAddress, `${NONCES_FN}${zeros(24)}${owner.substr(2)}`),
     deadline: deadline || MAX_INT,
   };
 
-  const domain = await getDomain(provider, token);
+  const domain = await getDomain(executingProvider, token);
   const typedData = createTypedERC2612Data(message, domain);
-  const sig = await signData(provider, owner, typedData);
+  const sig = await signData(signingProvider, owner, typedData);
 
   return { ...sig, ...message };
 };

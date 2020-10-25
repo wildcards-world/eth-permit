@@ -10,10 +10,10 @@ describe('ETH permit', () => {
   it('can call permit on Dai', async () => {
     const TestDai = contract.fromArtifact('TestDai');
     const dai = await TestDai.deploy().send();
-
+    
     setChainIdOverride(1); // https://github.com/trufflesuite/ganache-core/issues/515
 
-    const result = await signDaiPermit(provider, dai._address, defaultSender, spender);
+    const result = await signDaiPermit(provider, provider, dai._address, defaultSender, spender);
     
     await dai.methods.permit(defaultSender, spender, result.nonce, result.expiry, true, result.v, result.r, result.s).send({
       from: defaultSender,
@@ -30,7 +30,7 @@ describe('ETH permit', () => {
 
     const value = '1000000000000000000';
 
-    const result = await signERC2612Permit(provider, token._address, defaultSender, spender, value);
+    const result = await signERC2612Permit(provider, provider, token._address, defaultSender, spender, value);
 
     await token.methods.permit(defaultSender, spender, value, result.deadline, result.v, result.r, result.s).send({
       from: defaultSender,

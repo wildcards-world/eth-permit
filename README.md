@@ -1,6 +1,6 @@
-# eth-permit
+# eth-permit with two providers
 
-This package simplifies the process of signing `permit` messages for Ethereum tokens.
+This package simplifies the process of signing `permit` messages for Ethereum tokens. It adds a mechanism to provide two providers instead of one, to e.g. request the nonce and domain-parameters from one chain and retrieve the signature of the user while they are connected to another network.
 
 ## What is permit?
 
@@ -27,7 +27,7 @@ import { signDaiPermit } from 'eth-permit';
 
 // Sign message using injected provider (ie Metamask).
 // You can replace window.ethereum with any other web3 provider.
-const result = await signDaiPermit(window.ethereum, tokenAddress, senderAddress, spender);
+const result = await signDaiPermit(window.ethereum1, window.ethereum2, tokenAddress, senderAddress, spender);
 
 await token.methods.permit(senderAddress, spender, result.nonce, result.expiry, true, result.v, result.r, result.s).send({
   from: senderAddress,
@@ -43,7 +43,7 @@ const value = web3.utils.toWei('1', 'ether');
 
 // Sign message using injected provider (ie Metamask).
 // You can replace window.ethereum with any other web3 provider.
-const result = await signERC2612Permit(window.ethereum, tokenAddress, senderAddress, spender, value);
+const result = await signERC2612Permit(window.ethereum1, window.ethereum2, tokenAddress, senderAddress, spender, value);
 
 await token.methods.permit(senderAddress, spender, value, result.deadline, result.v, result.r, result.s).send({
   from: senderAddress,
